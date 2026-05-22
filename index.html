@@ -6,399 +6,374 @@
   <title>SideQuest // Feed</title>
   <style>
     :root {
-      --insta-bg: #000000;
-      --insta-card: #000000;
-      --insta-border: #262626;
+      --bg-black: #000000;
+      --card-gray: #000000;
+      --border-gray: #262626;
       --cyber-green: #00ff87;
       --cyber-blue: #00d2ff;
       --kawaii-pink: #ff007f;
-      --text-primary: #f5f5f5;
+      --text-white: #f5f5f5;
       --text-muted: #a8a8a8;
-      --input-bg: #121212;
+      --input-dark: #121212;
     }
 
     body, html {
-      margin: 0;
-      padding: 0;
-      background-color: var(--insta-bg);
-      color: var(--text-primary);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0; padding: 0;
+      background-color: var(--bg-black);
+      color: var(--text-white);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
     }
 
-    /* Fixed Top App Bar */
+    /* Top Navigation Bar */
     .nav-bar {
-      position: fixed;
-      top: 0;
-      width: 100%;
-      height: 60px;
+      position: fixed; top: 0; width: 100%; height: 60px;
       background: rgba(0, 0, 0, 0.85);
-      border-bottom: 1px solid var(--insta-border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-sizing: border-box;
-      padding: 0 20px;
-      z-index: 100;
+      border-bottom: 1px solid var(--border-gray);
+      display: flex; justify-content: space-between; align-items: center;
+      box-sizing: border-box; padding: 0 20px; z-index: 100;
       backdrop-filter: blur(10px);
     }
 
-    .logo {
-      font-size: 1.4rem;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      color: var(--text-primary);
-    }
+    .logo { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; }
     .logo span { color: var(--kawaii-pink); }
 
-    .config-btn {
-      background: none;
-      border: 1px solid var(--insta-border);
-      color: var(--cyber-blue);
-      padding: 6px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.8rem;
+    .user-actions { display: flex; gap: 12px; align-items: center; }
+    .nav-btn {
+      background: none; border: 1px solid var(--border-gray);
+      color: var(--cyber-blue); padding: 6px 14px; border-radius: 8px;
+      cursor: pointer; font-size: 0.85rem; font-weight: 600;
     }
+    .nav-btn.logout { color: var(--kawaii-pink); }
 
-    /* Main Scrolling Container */
+    /* Feed Container */
     .feed-container {
-      max-width: 470px;
-      margin: 80px auto 40px auto;
-      padding: 0 10px;
+      max-width: 470px; margin: 85px auto 40px auto; padding: 0 12px;
     }
 
-    /* Instagram Styled Post Creator Box */
+    /* Auth & Profile Screen Overlays */
+    .auth-view, .profile-setup-view {
+      background: var(--card-gray); border: 1px solid var(--border-gray);
+      border-radius: 12px; padding: 24px; margin-top: 40px; text-align: center;
+    }
+    .auth-view h2, .profile-setup-view h2 { margin-top: 0; color: var(--cyber-blue); }
+    
+    .input-group { margin-bottom: 16px; text-align: left; }
+    .input-group label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; }
+    
+    input[type="text"], input[type="email"], input[type="password"], textarea {
+      width: 100%; background: var(--input-dark); border: 1px solid var(--border-gray);
+      color: var(--text-white); border-radius: 8px; padding: 12px;
+      box-sizing: border-box; font-family: inherit; font-size: 0.9rem;
+    }
+    textarea { resize: none; }
+
+    .btn-action {
+      background: var(--kawaii-pink); color: white; border: none;
+      padding: 12px; border-radius: 8px; font-weight: bold;
+      cursor: pointer; font-size: 0.95rem; width: 100%; margin-top: 8px;
+    }
+    .toggle-auth {
+      background: none; border: none; color: var(--cyber-green);
+      margin-top: 16px; cursor: pointer; font-size: 0.85rem;
+    }
+
+    /* Instagram Style Post Creator Box */
     .create-card {
-      background: var(--insta-card);
-      border: 1px solid var(--insta-border);
-      border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 24px;
+      background: var(--card-gray); border: 1px solid var(--border-gray);
+      border-radius: 8px; padding: 16px; margin-bottom: 24px;
     }
+    .create-card h4 { margin: 0 0 12px 0; font-size: 0.85rem; color: var(--cyber-blue); letter-spacing: 1px; text-transform: uppercase;}
 
-    .create-card h4 {
-      margin: 0 0 12px 0;
-      font-size: 0.9rem;
-      color: var(--cyber-blue);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .create-card textarea {
-      width: 100%;
-      background: var(--input-bg);
-      border: 1px solid var(--insta-border);
-      color: var(--text-primary);
-      border-radius: 6px;
-      padding: 10px;
-      box-sizing: border-box;
-      resize: none;
-      font-family: inherit;
-      font-size: 0.9rem;
-      margin-bottom: 12px;
-    }
-
-    .create-card input {
-      width: 100%;
-      background: var(--input-bg);
-      border: 1px solid var(--insta-border);
-      color: var(--text-primary);
-      border-radius: 6px;
-      padding: 8px;
-      box-sizing: border-box;
-      font-family: inherit;
-      font-size: 0.85rem;
-      margin-bottom: 12px;
-    }
-
-    .btn-submit {
-      background: var(--kawaii-pink);
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 0.85rem;
-      width: 100%;
-    }
-
-    /* Instagram Styled Post Card */
+    /* Instagram Style Post Feed Card Layout */
     .insta-card {
-      background: var(--insta-card);
-      border: 1px solid var(--insta-border);
-      border-radius: 8px;
-      margin-bottom: 24px;
-      overflow: hidden;
+      background: var(--card-gray); border: 1px solid var(--border-gray);
+      border-radius: 8px; margin-bottom: 24px; overflow: hidden;
     }
-
-    .card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px;
-    }
-
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
+    .card-header { display: flex; align-items: center; padding: 14px; }
     .avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
+      width: 32px; height: 32px; border-radius: 50%;
       background: linear-gradient(45deg, var(--cyber-blue), var(--kawaii-pink));
-      padding: 2px;
+      padding: 2px; margin-right: 12px;
     }
-    .avatar-inner {
-      width: 100%;
-      height: 100%;
-      background: #000;
-      border-radius: 50%;
-    }
+    .avatar-inner { width: 100%; height: 100%; background: #000; border-radius: 50%; }
+    .username { font-size: 0.9rem; font-weight: 600; }
+    
+    .media-container { width: 100%; aspect-ratio: 4 / 5; background: #050505; }
+    video { width: 100%; height: 100%; object-fit: cover; }
+    
+    .card-body { padding: 14px; font-size: 0.9rem; line-height: 1.5; }
+    .caption-text span { font-weight: 600; margin-right: 8px; color: var(--cyber-green); }
 
-    .username {
-      font-size: 0.9rem;
-      font-weight: 600;
+    /* Empty State Container Box */
+    .empty-state {
+      border: 2px dashed var(--border-gray); border-radius: 12px;
+      padding: 40px 20px; text-align: center; margin-top: 40px;
     }
+    .empty-title { font-size: 1.2rem; font-weight: 700; color: var(--kawaii-pink); margin-bottom: 8px; }
+    .empty-subtitle { font-size: 0.9rem; color: var(--text-muted); line-height: 1.4; }
 
-    .quest-tag {
-      font-size: 0.75rem;
-      color: var(--cyber-green);
-      font-family: monospace;
-    }
-
-    .media-container {
-      width: 100%;
-      aspect-ratio: 4 / 5;
-      background: #050505;
-    }
-
-    video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .card-actions {
-      display: flex;
-      gap: 16px;
-      padding: 12px 12px 6px 12px;
-    }
-
-    .icon-btn {
-      background: none;
-      border: none;
-      font-size: 1.4rem;
-      color: var(--text-primary);
-      cursor: pointer;
-      padding: 0;
-    }
-
-    .card-body {
-      padding: 0 12px 16px 12px;
-      font-size: 0.9rem;
-      line-height: 1.4;
-    }
-
-    .caption-text span {
-      font-weight: 600;
-      margin-right: 8px;
-    }
-
-    /* Configuration Modal */
-    .modal {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.85);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 200;
-    }
-    .modal.hidden { display: none; }
-    .modal-content {
-      background: #121212;
-      border: 1px solid var(--insta-border);
-      padding: 24px;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 400px;
-    }
-    .modal-content input {
-      width: 100%;
-      background: #1c1c1e;
-      border: 1px solid var(--insta-border);
-      color: white;
-      padding: 10px;
-      margin: 8px 0 16px 0;
-      border-radius: 6px;
-      box-sizing: border-box;
-    }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
+  <!-- Fixed Header -->
   <div class="nav-bar">
     <div class="logo">Side<span>Quest</span></div>
-    <button class="config-btn" id="open-config">⚙️ Config Keys</button>
+    <div class="user-actions">
+      <span id="nav-user-display" style="font-size: 0.85rem; color: var(--text-muted);"></span>
+      <button class="nav-btn hidden" id="btn-logout">Logout</button>
+    </div>
   </div>
 
   <div class="feed-container">
     
-    <!-- Post Creator Form -->
-    <div class="create-card">
-      <h4>Log a Quest Update</h4>
-      <input type="text" id="post-video" placeholder="Paste direct video URL (mp4)...">
-      <textarea id="post-caption" rows="2" placeholder="What did you build or hack today?"></textarea>
-      <button class="btn-submit" id="submit-log">Transmit to Feed</button>
-    </div>
-
-    <!-- Live Stream Target -->
-    <div id="feed">
-      <!-- Fallback Placeholder Card -->
-      <div class="insta-card">
-        <div class="card-header"><div class="user-info"><div class="avatar"><div class="avatar-inner"></div></div><span class="username">cyber_builder</span><span class="quest-tag">// sample-quest</span></div></div>
-        <div class="media-container">
-          <video src="https://assets.mixkit.co/videos/preview/mixkit-typing-on-a-backlit-keyboard-in-the-dark-43187-large.mp4" loop autoplay muted playsinline></video>
-        </div>
-        <div class="card-body"><div class="caption-text"><span>cyber_builder</span>Configure your Supabase credentials using the button above to view your live cloud stream data!</div></div>
+    <!-- AUTH SCREEN (Login / Sign Up) -->
+    <div id="view-auth" class="auth-view hidden">
+      <h2 id="auth-title">Login to SideQuest</h2>
+      <div class="input-group">
+        <label>Email Address</label>
+        <input type="email" id="auth-email" placeholder="you@domain.com">
       </div>
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" id="auth-password" placeholder="••••••••">
+      </div>
+      <button class="btn-action" id="btn-auth-submit">Continue</button>
+      <button class="toggle-auth" id="btn-auth-toggle">Need an account? Sign Up</button>
     </div>
 
-  </div>
-
-  <!-- Setup Keys Modal Box -->
-  <div class="modal hidden" id="config-modal">
-    <div class="modal-content">
-      <h3 style="margin-top:0; color: var(--cyber-blue);">Supabase Setup</h3>
-      <p style="font-size: 0.8rem; color: var(--text-muted);">Saved inside your browser storage container. Safe from public GitHub scrapers.</p>
-      
-      <label>SUPABASE_URL</label>
-      <input type="text" id="secret-url" placeholder="https://xyz.supabase.co">
-      
-      <label>SUPABASE_ANON_KEY</label>
-      <input type="password" id="secret-key" placeholder="eyJhbGciOiJIUzI1Ni...">
-      
-      <button id="save-secrets" style="width: 100%; padding: 10px; border-radius: 6px; background: var(--kawaii-pink); color: white; border: none; font-weight: bold; cursor: pointer;">Save Locally</button>
+    <!-- PROFILE INITIAL SETUP SCREEN -->
+    <div id="view-profile-setup" class="profile-setup-view hidden">
+      <h2>Claim Your Handle</h2>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Pick a unique username to complete registration.</p>
+      <div class="input-group">
+        <label>Username</label>
+        <input type="text" id="setup-username" placeholder="cyber_hacker">
+      </div>
+      <button class="btn-action" id="btn-profile-submit">Save & Enter Feed</button>
     </div>
+
+    <!-- MAIN APP SCREEN (Feed + Post Creator) -->
+    <div id="view-main" class="hidden">
+      <!-- Post Creator Bar -->
+      <div class="create-card" id="creator-box">
+        <h4>Log a Quest Update</h4>
+        <div class="input-group" style="margin-bottom: 10px;">
+          <input type="text" id="post-video" placeholder="Paste direct MP4 video URL...">
+        </div>
+        <div class="input-group" style="margin-bottom: 12px;">
+          <textarea id="post-caption" rows="2" placeholder="What did you build or hack today?"></textarea>
+        </div>
+        <button class="btn-action" id="btn-post-submit" style="margin: 0;">Transmit to Feed</button>
+      </div>
+
+      <!-- Live Stream Feed Hook -->
+      <div id="feed-target"></div>
+    </div>
+
   </div>
 
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-    const modal = document.getElementById('config-modal');
-    let supabase = null;
+    // These tokens are managed cleanly via your repository Secrets replacement engine!
+    const SUPABASE_URL = '{{SUPABASE_URL}}'
+    const SUPABASE_ANON_KEY = '{{SUPABASE_ANON_KEY}}'
+    
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-    function getKeys() {
-      return {
-        url: localStorage.getItem('SQ_LOCAL_URL'),
-        key: localStorage.getItem('SQ_LOCAL_KEY')
-      }
+    // Layout View DOM Nodes
+    const viewAuth = document.getElementById('view-auth');
+    const viewProfileSetup = document.getElementById('view-profile-setup');
+    const viewMain = document.getElementById('view-main');
+    
+    const authTitle = document.getElementById('auth-title');
+    const authToggleBtn = document.getElementById('btn-auth-toggle');
+    const authSubmitBtn = document.getElementById('btn-auth-submit');
+    const logoutBtn = document.getElementById('btn-logout');
+    const userDisplay = document.getElementById('nav-user-display');
+    const feedTarget = document.getElementById('feed-target');
+
+    let isSignUpMode = false;
+    let currentUser = null;
+    let currentProfile = null;
+
+    // --- VIEW ROUTER ---
+    function switchView(view) {
+      viewAuth.classList.add('hidden');
+      viewProfileSetup.classList.add('hidden');
+      viewMain.classList.add('hidden');
+
+      if (view === 'auth') viewAuth.classList.remove('hidden');
+      if (view === 'setup') viewProfileSetup.classList.remove('hidden');
+      if (view === 'main') viewMain.classList.remove('hidden');
     }
 
-    async function initStream() {
-      const keys = getKeys();
-      if (!keys.url || !keys.key) {
-        modal.classList.remove('hidden');
+    // --- CHECK USER STATE & ROUTE ---
+    async function checkUserSession() {
+      const { data: { user } } = await supabase.auth.getUser();
+      currentUser = user;
+
+      if (!user) {
+        userDisplay.innerText = '';
+        logoutBtn.classList.add('hidden');
+        switchView('auth');
         return;
       }
 
-      supabase = createClient(keys.url, keys.key);
-      loadFeed();
+      // Check if user record row matches inside public.profiles database table
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('id', user.id)
+        .single();
+
+      if (error || !profile || !profile.username) {
+        switchView('setup');
+      } else {
+        currentProfile = profile;
+        userDisplay.innerText = `@${profile.username}`;
+        logoutBtn.classList.remove('hidden');
+        switchView('main');
+        loadFeedStream();
+      }
     }
 
-    async function loadFeed() {
+    // --- LIVE FEED STREAM RENDERING ---
+    async function loadFeedStream() {
+      feedTarget.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-muted);">Syncing matrix feed...</div>';
+      
       try {
-        const { data: logs, error } = await supabase
-          .from('updates')
-          .select(`content, video_url, projects(title), profiles(username)`)
+        const { data: posts, error } = await supabase
+          .from('posts')
+          .select(`
+            id, content, video_url, created_at,
+            profiles ( username )
+          `)
           .order('created_at', { ascending: false });
 
         if (error) throw error;
 
-        const feed = document.getElementById('feed');
-        if (logs && logs.length > 0) {
-          feed.innerHTML = '';
-          logs.forEach(log => {
-            const card = document.createElement('div');
-            card.className = 'insta-card';
-            card.innerHTML = `
-              <div class="card-header">
-                <div class="user-info">
-                  <div class="avatar"><div class="avatar-inner"></div></div>
-                  <span class="username">${log.profiles?.username || 'builder'}</span>
-                  <span class="quest-tag">// ${log.projects?.title || 'quest'}</span>
-                </div>
-              </div>
-              <div class="media-container">
-                <video src="${log.video_url}" loop autoplay muted playsinline></video>
-              </div>
-              <div class="card-actions">
-                <button class="icon-btn">✨</button>
-                <button class="icon-btn">💬</button>
-              </div>
-              <div class="card-body">
-                <div class="caption-text"><span>${log.profiles?.username || 'builder'}</span>${log.content}</div>
-              </div>
-            `;
-            feed.appendChild(card);
-          });
+        // Exact Empty State Trigger Handler
+        if (!posts || posts.length === 0) {
+          feedTarget.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-title">Uh oh.... looks like sideQuest has no posts yet!</div>
+              <div class="empty-subtitle">Wanna become the first? Use the logger panel above to transmit an operational update.</div>
+            </div>
+          `;
+          return;
         }
+
+        feedTarget.innerHTML = '';
+        posts.forEach(post => {
+          const author = post.profiles?.username || 'anonymous';
+          const card = document.createElement('div');
+          card.className = 'insta-card';
+          card.innerHTML = `
+            <div class="card-header">
+              <div class="avatar"><div class="avatar-inner"></div></div>
+              <span class="username">@${author}</span>
+            </div>
+            <div class="media-container">
+              <video src="${post.video_url}" loop autoplay muted playsinline></video>
+            </div>
+            <div class="card-body">
+              <div class="caption-text"><span>@${author}</span>${post.content}</div>
+            </div>
+          `;
+          feedTarget.appendChild(card);
+        });
+
       } catch (err) {
-        console.error("Fetch failure:", err.message);
+        feedTarget.innerHTML = `<div style="color: var(--kawaii-pink); padding: 10px; font-size: 0.85rem;">Feed Sync Failed: ${err.message}</div>`;
       }
     }
 
-    // Handle Upload Submission
-    document.getElementById('submit-log').addEventListener('click', async () => {
-      if (!supabase) return alert("Please configure keys first!");
-      
-      const videoUrl = document.getElementById('post-video').value.trim();
-      const caption = document.getElementById('post-caption').value.trim();
+    // --- EVENT CONTROLLERS ---
 
-      if (!videoUrl || !caption) return alert("Fill out both boxes to transmit!");
+    // Toggle Login / Registration State Switcher
+    authToggleBtn.addEventListener('click', () => {
+      isSignUpMode = !isSignUpMode;
+      authTitle.innerText = isSignUpMode ? 'Create SideQuest Account' : 'Login to SideQuest';
+      authToggleBtn.innerText = isSignUpMode ? 'Already registered? Login' : 'Need an account? Sign Up';
+    });
 
-      // NOTE: For testing purposes before auth is built, we are assuming a linked 
-      // project ID and user ID exist in your rows. Change these to your actual database IDs!
+    // Auth Submit Handler
+    authSubmitBtn.addEventListener('click', async () => {
+      const email = document.getElementById('auth-email').value.trim();
+      const password = document.getElementById('auth-password').value.trim();
+
+      if (!email || !password) return alert('Input credentials completely!');
+
+      authSubmitBtn.innerText = 'Processing...';
+      if (isSignUpMode) {
+        const { error } = await supabase.auth.signUp({ email, password });
+        if (error) alert(error.message);
+        else alert('Account registered! Proceeding to setup.');
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) alert(error.message);
+      }
+      authSubmitBtn.innerText = 'Continue';
+      checkUserSession();
+    });
+
+    // Setup Unique Username Profile Row
+    document.getElementById('btn-profile-submit').addEventListener('click', async () => {
+      const username = document.getElementById('setup-username').value.trim().toLowerCase();
+      if (!username) return alert('Username entry is required!');
+
+      // Insert or upsert metadata directly mapped to current authenticated user UUID
       const { error } = await supabase
-        .from('updates')
-        .insert([
-          { 
-            content: caption, 
-            video_url: videoUrl,
-            project_id: 'PASTE_AN_ID_FROM_YOUR_PROJECTS_TABLE', 
-            user_id: 'PASTE_YOUR_USER_ID' 
-          }
-        ]);
+        .from('profiles')
+        .upsert({ id: currentUser.id, username: username });
 
       if (error) {
-        alert("Upload Error: " + error.message);
+        alert('Handle claim failure: ' + error.message);
       } else {
-        document.getElementById('post-video').value = '';
-        document.getElementById('post-caption').value = '';
-        loadFeed(); // Refresh stream layout instantly
+        checkUserSession();
       }
     });
 
-    // Configuration Event Listeners
-    document.getElementById('open-config').addEventListener('click', () => {
-      const keys = getKeys();
-      document.getElementById('secret-url').value = keys.url || '';
-      document.getElementById('secret-key').value = keys.key || '';
-      modal.classList.remove('hidden');
+    // Handle Creation and Transmit of New Feed Item
+    document.getElementById('btn-post-submit').addEventListener('click', async () => {
+      const videoUrl = document.getElementById('post-video').value.trim();
+      const content = document.getElementById('post-caption').value.trim();
+
+      if (!videoUrl || !content) return alert('Please input both a direct video URL and caption text!');
+
+      const submitBtn = document.getElementById('btn-post-submit');
+      submitBtn.innerText = 'Transmitting...';
+
+      const { error } = await supabase
+        .from('posts')
+        .insert([{ 
+          user_id: currentUser.id, 
+          video_url: videoUrl, 
+          content: content 
+        }]);
+
+      submitBtn.innerText = 'Transmit to Feed';
+
+      if (error) {
+        alert('Transmission Failed: ' + error.message);
+      } else {
+        document.getElementById('post-video').value = '';
+        document.getElementById('post-caption').value = '';
+        loadFeedStream();
+      }
     });
 
-    document.getElementById('save-secrets').addEventListener('click', () => {
-      localStorage.setItem('SQ_LOCAL_URL', document.getElementById('secret-url').value.trim());
-      localStorage.setItem('SQ_LOCAL_KEY', document.getElementById('secret-key').value.trim());
-      modal.classList.add('hidden');
-      initStream();
+    // Close Authentication Session
+    logoutBtn.addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      checkUserSession();
     });
 
-    initStream();
+    // Initialize Engine
+    checkUserSession();
   </script>
 </body>
 </html>
