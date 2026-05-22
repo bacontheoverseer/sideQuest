@@ -3,244 +3,335 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SideQuest // Feed</title>
+  <title>SideQuest // Instagram Feed</title>
   <style>
     :root {
-      --bg-black: #000000;
-      --bg-dark: #0b0f17;
+      --insta-bg: #000000;
+      --insta-card: #000000;
+      --insta-border: #262626;
       --cyber-green: #00ff87;
       --cyber-blue: #00d2ff;
       --kawaii-pink: #ff007f;
-      --text-white: #ffffff;
+      --text-primary: #f5f5f5;
+      --text-muted: #a8a8a8;
     }
 
     body, html {
       margin: 0;
       padding: 0;
+      background-color: var(--insta-bg);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    /* Fixed Top App Bar */
+    .nav-bar {
+      position: fixed;
+      top: 0;
       width: 100%;
-      height: 100%;
-      background-color: var(--bg-black);
-      color: var(--text-white);
-      font-family: 'Courier New', Courier, monospace;
+      height: 60px;
+      background: rgba(0, 0, 0, 0.85);
+      border-bottom: 1px solid var(--insta-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-sizing: border-box;
+      padding: 0 20px;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .logo {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--text-primary);
+    }
+    .logo span { color: var(--kawaii-pink); }
+
+    .config-btn {
+      background: none;
+      border: 1px solid var(--insta-border);
+      color: var(--cyber-blue);
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    /* Main Scrolling Container */
+    .feed-container {
+      max-width: 470px;
+      margin: 80px auto 40px auto;
+      padding: 0 10px;
+    }
+
+    /* Instagram Styled Post Card */
+    .insta-card {
+      background: var(--insta-card);
+      border: 1px solid var(--insta-border);
+      border-radius: 8px;
+      margin-bottom: 24px;
       overflow: hidden;
     }
 
-    /* TikTok Style Snap Container */
-    .video-feed {
-      width: 100%;
-      height: 100vh;
-      overflow-y: scroll;
-      scroll-snap-type: y mandatory; /* Forces full screen snapping */
-      scroll-behavior: smooth;
+    /* Card Header */
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
     }
 
-    /* Individual Full Screen Video Slide */
-    .video-slide {
-      width: 100%;
-      height: 100vh;
-      scroll-snap-align: start; /* Locks slide to top edge */
-      position: relative;
+    .user-info {
       display: flex;
-      justify-content: center;
       align-items: center;
-      background: var(--bg-dark);
+      gap: 10px;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, var(--cyber-blue), var(--kawaii-pink));
+      padding: 2px;
+    }
+    .avatar-inner {
+      width: 100%;
+      height: 100%;
+      background: #000;
+      border-radius: 50%;
+    }
+
+    .username {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .quest-tag {
+      font-size: 0.75rem;
+      color: var(--cyber-green);
+      font-family: monospace;
+      font-weight: bold;
+    }
+
+    /* Card Video Frame */
+    .media-container {
+      width: 100%;
+      aspect-ratio: 4 / 5; /* Clean vertical grid frame */
+      background: #050505;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     video {
       width: 100%;
       height: 100%;
-      object-fit: cover; /* Fills screen like TikTok mobile view */
-      max-width: 500px; /* Constraints for desktop browser testing */
+      object-fit: cover;
+      cursor: pointer;
     }
 
-    /* UI Overlay Left side: Text descriptions */
-    .video-sidebar-left {
-      position: absolute;
-      bottom: 30px;
-      left: calc(50% - 230px);
-      width: 360px;
-      z-index: 10;
-      text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
-      padding: 0 20px;
+    /* Card Action Toolbar */
+    .card-actions {
+      display: flex;
+      gap: 16px;
+      padding: 12px 12px 6px 12px;
     }
 
-    @media (max-width: 520px) {
-      .video-sidebar-left { left: 20px; width: auto; right: 80px; }
+    .icon-btn {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      color: var(--text-primary);
+      cursor: pointer;
+      padding: 0;
+      transition: transform 0.1s ease;
     }
+    .icon-btn:hover { transform: scale(1.1); }
+    .icon-btn.enhance:hover { color: var(--kawaii-pink); }
 
-    .username {
-      font-weight: bold;
-      font-size: 1.1rem;
-      color: var(--cyber-blue);
-      margin-bottom: 5px;
-    }
-
-    .quest-tag {
-      color: var(--cyber-green);
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      display: inline-block;
-      margin-bottom: 8px;
-    }
-
-    .caption {
+    /* Card Captions / Details */
+    .card-body {
+      padding: 0 12px 16px 12px;
       font-size: 0.9rem;
       line-height: 1.4;
     }
 
-    /* UI Overlay Right side: Action Utility Buttons */
-    .video-sidebar-right {
-      position: absolute;
-      bottom: 100px;
-      right: calc(50% - 240px);
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      z-index: 10;
-      align-items: center;
+    .likes-count {
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 0.85rem;
     }
 
-    @media (max-width: 520px) {
-      .video-sidebar-right { right: 15px; }
+    .caption-text span {
+      font-weight: 600;
+      margin-right: 8px;
     }
 
-    .action-circle {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background: rgba(22, 31, 48, 0.6);
-      border: 1px solid rgba(0, 210, 255, 0.3);
+    /* Secret Key Configuration Modal Overlay */
+    .modal {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85);
       display: flex;
       justify-content: center;
       align-items: center;
-      cursor: pointer;
-      font-size: 1.2rem;
-      transition: 0.2s;
+      z-index: 200;
     }
-
-    .action-circle:hover {
-      transform: scale(1.1);
-      border-color: var(--kawaii-pink);
+    .modal.hidden { display: none; }
+    .modal-content {
+      background: #121212;
+      border: 1px solid var(--insta-border);
+      padding: 24px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
     }
-
-    .action-label {
-      font-size: 0.7rem;
-      color: #cbd5e1;
-      margin-top: 4px;
-      text-align: center;
-    }
-
-    .action-group {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    /* App Header Logo overlay */
-    .app-header {
-      position: absolute;
-      top: 20px;
-      left: 0;
+    .modal-content h3 { margin-top: 0; color: var(--cyber-blue); }
+    .modal-content input {
       width: 100%;
-      text-align: center;
-      z-index: 10;
-      font-size: 1.3rem;
-      letter-spacing: 3px;
-      font-weight: bold;
-      text-transform: uppercase;
-      color: var(--cyber-blue);
-      pointer-events: none;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+      background: #1c1c1e;
+      border: 1px solid var(--insta-border);
+      color: white;
+      padding: 10px;
+      margin: 8px 0 16px 0;
+      border-radius: 6px;
+      box-sizing: border-box;
     }
-    .app-header span { color: var(--kawaii-pink); }
   </style>
 </head>
 <body>
 
-  <div class="app-header">Side<span>Quest</span></div>
+  <!-- Top Navigation Header -->
+  <div class="nav-bar">
+    <div class="logo">Side<span>Quest</span></div>
+    <button class="config-btn" id="open-config">⚙️ Environment</button>
+  </div>
 
-  <!-- The Snapping Container -->
-  <div class="video-feed" id="feed">
-    
-    <!-- Hardcoded Mock Slide to see what it looks like before DB rows exist -->
-    <div class="video-slide">
-      <!-- Direct placeholder sample video loop -->
-      <video src="https://assets.mixkit.co/videos/preview/mixkit-typing-on-a-backlit-keyboard-in-the-dark-43187-large.mp4" loop autoplay muted playsinline></video>
-      
-      <div class="video-sidebar-left">
-        <div class="username">@cyber_builder</div>
-        <div class="quest-tag">⚙️ Sunshine Proxy</div>
-        <div class="caption">Wired up the background fetch worker loop! Everything is streaming in under 40ms now. Let's go! #lofi #cyber</div>
+  <!-- Central Dynamic Feed -->
+  <div class="feed-container" id="feed">
+    <!-- Static Instagram Card Placeholder -->
+    <div class="insta-card">
+      <div class="card-header">
+        <div class="user-info">
+          <div class="avatar"><div class="avatar-inner"></div></div>
+          <span class="username">cyber_builder</span>
+          <span class="quest-tag">// sunshine-proxy</span>
+        </div>
       </div>
-
-      <div class="video-sidebar-right">
-        <div class="action-group">
-          <div class="action-circle">✨</div>
-          <div class="action-label">128</div>
-        </div>
-        <div class="action-group">
-          <div class="action-circle">💬</div>
-          <div class="action-label">8</div>
-        </div>
+      <div class="media-container">
+        <video src="https://assets.mixkit.co/videos/preview/mixkit-typing-on-a-backlit-keyboard-in-the-dark-43187-large.mp4" loop autoplay muted playsinline></video>
+      </div>
+      <div class="card-actions">
+        <button class="icon-btn enhance">✨</button>
+        <button class="icon-btn">💬</button>
+      </div>
+      <div class="card-body">
+        <div class="likes-count">14 enhances</div>
+        <div class="caption-text"><span>cyber_builder</span>Optimized the background fetch worker loop stream. Updates land in under 40ms now!</div>
       </div>
     </div>
+  </div>
 
+  <!-- Environmental Secrets Key Modal Box -->
+  <div class="modal hidden" id="config-modal">
+    <div class="modal-content">
+      <h3>Set Project Secrets</h3>
+      <p style="font-size: 0.8rem; color: var(--text-muted);">Stored safely inside your personal browser storage container.</p>
+      
+      <label>SUPABASE_URL</label>
+      <input type="text" id="secret-url" placeholder="https://your-project.supabase.co">
+      
+      <label>SUPABASE_ANON_KEY</label>
+      <input type="password" id="secret-key" placeholder="eyJhbGciOiJIUzI1Ni...">
+      
+      <button id="save-secrets" style="width: 100%; padding: 10px; border-radius: 6px; background: var(--kawaii-pink); color: white; border: none; font-weight: bold; cursor: pointer;">Save Setup</button>
+    </div>
   </div>
 
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-    const SUPABASE_URL = 'https://pxkfgrtxtyydaylnducd.supabase.co'
-    const SUPABASE_ANON_KEY = 'sb_publishable_WF-pMH4Z_cSZtz2oUlBEoA_kx1hnSMc'
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-
-    async function streamVideoFeed() {
-      const { data: logs, error } = await supabase
-        .from('updates')
-        .select(`
-          id, content, video_url,
-          projects ( title, category ),
-          profiles ( username )
-        `)
-        .order('created_at', { ascending: false })
-
-      if (error) {
-        console.error("Database connection dropped:", error)
-        return;
-      }
-
-      const feedElement = document.getElementById('feed');
-      if (logs && logs.length > 0) {
-        feedElement.innerHTML = ''; // Wipe mock content if data exists
-
-        logs.forEach(log => {
-          const slide = document.createElement('div');
-          slide.className = 'video-slide';
-
-          slide.innerHTML = `
-            <video src="${log.video_url}" loop autoplay muted playsinline></video>
-            <div class="video-sidebar-left">
-              <div class="username">@${log.profiles?.username || 'builder'}</div>
-              <div class="quest-tag">🚀 ${log.projects?.title || 'SideQuest'}</div>
-              <div class="caption">${log.content}</div>
-            </div>
-            <div class="video-sidebar-right">
-              <div class="action-group">
-                <div class="action-circle">✨</div>
-                <div class="action-label">Enhance</div>
-              </div>
-              <div class="action-group">
-                <div class="action-circle">💬</div>
-                <div class="action-label">Advise</div>
-              </div>
-            </div>
-          `;
-          feedElement.appendChild(slide);
-        });
+    const modal = document.getElementById('config-modal');
+    
+    // Environment Initialization Engine
+    function getSecrets() {
+      return {
+        url: localStorage.getItem('SQ_SECRET_URL'),
+        key: localStorage.getItem('SQ_SECRET_KEY')
       }
     }
 
-    streamVideoFeed();
+    // Connect and Render Stream Data
+    async function initFeedStream() {
+      const secrets = getSecrets();
+      if (!secrets.url || !secrets.key) {
+        modal.classList.remove('hidden'); // Force config view if empty
+        return;
+      }
+
+      try {
+        const supabase = createClient(secrets.url, secrets.key)
+        const { data: logs, error } = await supabase
+          .from('updates')
+          .select(`id, content, video_url, projects(title), profiles(username)`)
+          .order('created_at', { ascending: false })
+
+        if (error) throw error;
+
+        const feedElement = document.getElementById('feed');
+        if (logs && logs.length > 0) {
+          feedElement.innerHTML = ''; // Wipe out default cards on connection success
+          
+          logs.forEach(log => {
+            const card = document.createElement('div');
+            card.className = 'insta-card';
+            card.innerHTML = `
+              <div class="card-header">
+                <div class="user-info">
+                  <div class="avatar"><div class="avatar-inner"></div></div>
+                  <span class="username">${log.profiles?.username || 'builder'}</span>
+                  <span class="quest-tag">// ${log.projects?.title || 'quest'}</span>
+                </div>
+              </div>
+              <div class="media-container">
+                <video src="${log.video_url}" loop autoplay muted playsinline></video>
+              </div>
+              <div class="card-actions">
+                <button class="icon-btn enhance">✨</button>
+                <button class="icon-btn">💬</button>
+              </div>
+              <div class="card-body">
+                <div class="likes-count">Enhance log</div>
+                <div class="caption-text"><span>${log.profiles?.username || 'builder'}</span>${log.content}</div>
+              </div>
+            `;
+            feedElement.appendChild(card);
+          });
+        }
+      } catch (err) {
+        console.error("Connection config failed:", err.message);
+      }
+    }
+
+    // Modal Interaction Handlers
+    document.getElementById('open-config').addEventListener('click', () => {
+      const secrets = getSecrets();
+      document.getElementById('secret-url').value = secrets.url || '';
+      document.getElementById('secret-key').value = secrets.key || '';
+      modal.classList.remove('hidden');
+    });
+
+    document.getElementById('save-secrets').addEventListener('click', () => {
+      localStorage.setItem('SQ_SECRET_URL', document.getElementById('secret-url').value.trim());
+      localStorage.setItem('SQ_SECRET_KEY', document.getElementById('secret-key').value.trim());
+      modal.classList.add('hidden');
+      initFeedStream();
+    });
+
+    // Auto load feed data on startup
+    initFeedStream();
   </script>
 </body>
 </html>
