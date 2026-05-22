@@ -204,6 +204,37 @@
       </div>
     </main>
   </div>
+<script type="module">
+  // Import the Supabase JS Library from a CDN
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
+  const SUPABASE_URL = 'https://pxkfgrtxtyydaylnducd.supabase.co'
+  const SUPABASE_ANON_KEY = 'sb_publishable_WF-pMH4Z_cSZtz2oUlBEoA_kx1hnSMc'
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+  // Function to pull logs from the cloud database
+  async function loadQuestLogs() {
+    const { data: logs, error } = await supabase
+      .from('updates')
+      .select(`
+        id, content, created_at,
+        projects ( title, category ),
+        profiles ( username )
+      `)
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      console.error("Error connecting to database stream:", error)
+      return;
+    }
+
+    const feedElement = document.getElementById('feed');
+    // Clear out standard mock data and dynamically inject real data here!
+    console.log("Database response successfully synced:", logs)
+  }
+
+  // Auto-trigger loading code on startup
+  loadQuestLogs();
+</script>
 </body>
 </html>
