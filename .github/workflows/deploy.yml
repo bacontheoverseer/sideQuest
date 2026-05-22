@@ -6,7 +6,7 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -20,14 +20,17 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      # An updated, robust string replacement step
+       scrimmage-proof:
       - name: Inject Supabase Credentials
         run: |
-          sed -i "s|{{SUPABASE_URL}}|${{ secrets.SUPABASE_URL }}|g" index.html
-          sed -i "s|{{SUPABASE_ANON_KEY}}|${{ secrets.SUPABASE_ANON_KEY }}|g" index.html
+          sed -i 's|{{SUPABASE_URL}}|${{ secrets.SUPABASE_URL }}|g' index.html
+          sed -i 's|{{SUPABASE_ANON_KEY}}|${{ secrets.SUPABASE_ANON_KEY }}|g' index.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
+       liberty-package:
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
