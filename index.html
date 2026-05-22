@@ -3,238 +3,244 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SideQuest // Build in Public</title>
+  <title>SideQuest // Feed</title>
   <style>
     :root {
-      --bg-dark: #0f141c;
-      --bg-card: #161f30;
+      --bg-black: #000000;
+      --bg-dark: #0b0f17;
       --cyber-green: #00ff87;
       --cyber-blue: #00d2ff;
       --kawaii-pink: #ff007f;
-      --text-main: #e2e8f0;
-      --text-muted: #64748b;
+      --text-white: #ffffff;
     }
 
-    body {
-      background-color: var(--bg-dark);
-      color: var(--text-main);
-      font-family: 'Courier New', Courier, monospace; /* Lo-fi terminal feel */
+    body, html {
       margin: 0;
       padding: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg-black);
+      color: var(--text-white);
+      font-family: 'Courier New', Courier, monospace;
+      overflow: hidden;
+    }
+
+    /* TikTok Style Snap Container */
+    .video-feed {
+      width: 100%;
+      height: 100vh;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory; /* Forces full screen snapping */
+      scroll-behavior: smooth;
+    }
+
+    /* Individual Full Screen Video Slide */
+    .video-slide {
+      width: 100%;
+      height: 100vh;
+      scroll-snap-align: start; /* Locks slide to top edge */
+      position: relative;
       display: flex;
       justify-content: center;
-    }
-
-    .app-container {
-      width: 100%;
-      max-width: 1100px;
-      display: grid;
-      grid-template-columns: 280px 1fr;
-      gap: 20px;
-      padding: 20px;
-    }
-
-    /* Left Sidebar */
-    sidebar {
-      border-right: 1px solid #22314d;
-      padding-right: 20px;
-    }
-
-    .logo {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: var(--cyber-blue);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      margin-bottom: 30px;
-    }
-
-    .logo span { color: var(--kawaii-pink); }
-
-    .nav-item {
-      padding: 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-bottom: 5px;
-      transition: 0.2s;
-    }
-    .nav-item:hover { background: var(--bg-card); color: var(--cyber-green); }
-
-    /* Main Feed Area */
-    main {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    /* Log Update Input Box */
-    .log-box {
-      background: var(--bg-card);
-      border: 1px solid #22314d;
-      border-radius: 12px;
-      padding: 20px;
-    }
-    
-    textarea {
-      width: 100%;
-      background: #0b1017;
-      border: 1px solid #22314d;
-      color: var(--text-main);
-      padding: 12px;
-      border-radius: 8px;
-      resize: none;
-      box-sizing: border-box;
-      font-family: inherit;
-    }
-
-    .log-actions {
-      display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-top: 10px;
+      background: var(--bg-dark);
     }
 
-    button {
-      background: var(--kawaii-pink);
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 6px;
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover; /* Fills screen like TikTok mobile view */
+      max-width: 500px; /* Constraints for desktop browser testing */
+    }
+
+    /* UI Overlay Left side: Text descriptions */
+    .video-sidebar-left {
+      position: absolute;
+      bottom: 30px;
+      left: calc(50% - 230px);
+      width: 360px;
+      z-index: 10;
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
+      padding: 0 20px;
+    }
+
+    @media (max-width: 520px) {
+      .video-sidebar-left { left: 20px; width: auto; right: 80px; }
+    }
+
+    .username {
       font-weight: bold;
-      cursor: pointer;
-      font-family: inherit;
-    }
-    button:hover { opacity: 0.9; transform: translateY(-1px); }
-
-    /* Feed Post Cards */
-    .post-card {
-      background: var(--bg-card);
-      border: 1px solid #22314d;
-      border-radius: 12px;
-      padding: 20px;
-      position: relative;
+      font-size: 1.1rem;
+      color: var(--cyber-blue);
+      margin-bottom: 5px;
     }
 
-    .post-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    }
-
-    .quest-title {
+    .quest-tag {
       color: var(--cyber-green);
       font-size: 0.9rem;
       text-transform: uppercase;
+      display: inline-block;
+      margin-bottom: 8px;
     }
 
-    .category-tag {
-      font-size: 0.75rem;
-      background: #22314d;
-      padding: 3px 8px;
-      border-radius: 4px;
-      color: var(--cyber-blue);
+    .caption {
+      font-size: 0.9rem;
+      line-height: 1.4;
     }
 
-    .post-content {
-      line-height: 1.5;
-    }
-
-    .post-footer {
-      margin-top: 15px;
+    /* UI Overlay Right side: Action Utility Buttons */
+    .video-sidebar-right {
+      position: absolute;
+      bottom: 100px;
+      right: calc(50% - 240px);
       display: flex;
-      gap: 15px;
+      flex-direction: column;
+      gap: 20px;
+      z-index: 10;
+      align-items: center;
     }
 
-    .action-btn {
-      background: none;
-      border: 1px solid #22314d;
-      color: var(--text-muted);
-      padding: 5px 10px;
-      font-size: 0.8rem;
+    @media (max-width: 520px) {
+      .video-sidebar-right { right: 15px; }
     }
-    .action-btn:hover {
+
+    .action-circle {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(22, 31, 48, 0.6);
+      border: 1px solid rgba(0, 210, 255, 0.3);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: 0.2s;
+    }
+
+    .action-circle:hover {
+      transform: scale(1.1);
       border-color: var(--kawaii-pink);
-      color: var(--kawaii-pink);
     }
+
+    .action-label {
+      font-size: 0.7rem;
+      color: #cbd5e1;
+      margin-top: 4px;
+      text-align: center;
+    }
+
+    .action-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* App Header Logo overlay */
+    .app-header {
+      position: absolute;
+      top: 20px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      z-index: 10;
+      font-size: 1.3rem;
+      letter-spacing: 3px;
+      font-weight: bold;
+      text-transform: uppercase;
+      color: var(--cyber-blue);
+      pointer-events: none;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+    .app-header span { color: var(--kawaii-pink); }
   </style>
 </head>
 <body>
 
-  <div class="app-container">
-    <!-- Sidebar Controls -->
-    <sidebar>
-      <div class="logo">Side<span>Quest</span></div>
-      <div class="nav-item">🌌 All Quests</div>
-      <div class="nav-item">💻 Software Apps</div>
-      <div class="nav-item">🛠️ Life Hacks</div>
-      <div class="nav-item">🦾 Hardware</div>
-    </sidebar>
+  <div class="app-header">Side<span>Quest</span></div>
 
-    <!-- Main Content Stream -->
-    <main>
-      <!-- Log New Quest Entry Box -->
-      <div class="log-box">
-        <textarea rows="3" placeholder="Log your latest progress... (e.g. Optimized the proxy background loop!)"></textarea>
-        <div class="log-actions">
-          <span style="color: var(--text-muted); font-size: 0.8rem;">Quest: Sunshine Proxy</span>
-          <button>Transmit Log</button>
-        </div>
+  <!-- The Snapping Container -->
+  <div class="video-feed" id="feed">
+    
+    <!-- Hardcoded Mock Slide to see what it looks like before DB rows exist -->
+    <div class="video-slide">
+      <!-- Direct placeholder sample video loop -->
+      <video src="https://assets.mixkit.co/videos/preview/mixkit-typing-on-a-backlit-keyboard-in-the-dark-43187-large.mp4" loop autoplay muted playsinline></video>
+      
+      <div class="video-sidebar-left">
+        <div class="username">@cyber_builder</div>
+        <div class="quest-tag">⚙️ Sunshine Proxy</div>
+        <div class="caption">Wired up the background fetch worker loop! Everything is streaming in under 40ms now. Let's go! #lofi #cyber</div>
       </div>
 
-      <!-- Feed Stream Container -->
-      <div id="feed">
-        <!-- Mock Post Structure -->
-        <div class="post-card">
-          <div class="post-header">
-            <div>
-              <span style="font-weight: bold;">@cyber_builder</span> 
-              <span style="color: var(--text-muted)">logged on</span> 
-              <span class="quest-title">Cytrus Soda Brand</span>
-            </div>
-            <span class="category-tag">life-hack</span>
-          </div>
-          <div class="post-content">
-            Day 14: Finished dialing in the orange-mint carbonation profile. Added a cold-brew infusion step to lock in the mint aroma. Tastes completely fresh.
-          </div>
-          <div class="post-footer">
-            <button class="action-btn">✨ Enhance (12)</button>
-            <button class="action-btn">💬 Advise</button>
-          </div>
+      <div class="video-sidebar-right">
+        <div class="action-group">
+          <div class="action-circle">✨</div>
+          <div class="action-label">128</div>
+        </div>
+        <div class="action-group">
+          <div class="action-circle">💬</div>
+          <div class="action-label">8</div>
         </div>
       </div>
-    </main>
+    </div>
+
   </div>
-<script type="module">
-  // Import the Supabase JS Library from a CDN
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-  const SUPABASE_URL = 'https://pxkfgrtxtyydaylnducd.supabase.co'
-  const SUPABASE_ANON_KEY = 'sb_publishable_WF-pMH4Z_cSZtz2oUlBEoA_kx1hnSMc'
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-  // Function to pull logs from the cloud database
-  async function loadQuestLogs() {
-    const { data: logs, error } = await supabase
-      .from('updates')
-      .select(`
-        id, content, created_at,
-        projects ( title, category ),
-        profiles ( username )
-      `)
-      .order('created_at', { ascending: false })
+    const SUPABASE_URL = 'https://pxkfgrtxtyydaylnducd.supabase.co'
+    const SUPABASE_ANON_KEY = 'sb_publishable_WF-pMH4Z_cSZtz2oUlBEoA_kx1hnSMc'
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-    if (error) {
-      console.error("Error connecting to database stream:", error)
-      return;
+    async function streamVideoFeed() {
+      const { data: logs, error } = await supabase
+        .from('updates')
+        .select(`
+          id, content, video_url,
+          projects ( title, category ),
+          profiles ( username )
+        `)
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        console.error("Database connection dropped:", error)
+        return;
+      }
+
+      const feedElement = document.getElementById('feed');
+      if (logs && logs.length > 0) {
+        feedElement.innerHTML = ''; // Wipe mock content if data exists
+
+        logs.forEach(log => {
+          const slide = document.createElement('div');
+          slide.className = 'video-slide';
+
+          slide.innerHTML = `
+            <video src="${log.video_url}" loop autoplay muted playsinline></video>
+            <div class="video-sidebar-left">
+              <div class="username">@${log.profiles?.username || 'builder'}</div>
+              <div class="quest-tag">🚀 ${log.projects?.title || 'SideQuest'}</div>
+              <div class="caption">${log.content}</div>
+            </div>
+            <div class="video-sidebar-right">
+              <div class="action-group">
+                <div class="action-circle">✨</div>
+                <div class="action-label">Enhance</div>
+              </div>
+              <div class="action-group">
+                <div class="action-circle">💬</div>
+                <div class="action-label">Advise</div>
+              </div>
+            </div>
+          `;
+          feedElement.appendChild(slide);
+        });
+      }
     }
 
-    const feedElement = document.getElementById('feed');
-    // Clear out standard mock data and dynamically inject real data here!
-    console.log("Database response successfully synced:", logs)
-  }
-
-  // Auto-trigger loading code on startup
-  loadQuestLogs();
-</script>
+    streamVideoFeed();
+  </script>
 </body>
 </html>
